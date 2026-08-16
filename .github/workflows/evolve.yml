@@ -23,28 +23,29 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install dsh + swarm-router
+      - name: Install pnpm + dsh + swarm-router
         run: |
+          npm install -g pnpm
           mkdir -p $DSH_HOME
-          cat > $DSH_HOME/.credentials.yaml <<EOF
-          DEEPSEEK_API_KEY: https://www.cfgpu.com/userapi/v1/model/v1
-          CFGPU_API_KEY: $CFGPU_API_KEY
-          EOF
+          printf 'DEEPSEEK_API_KEY: https://www.cfgpu.com/userapi/v1/model/v1\nCFGPU_API_KEY: %s\n' "$CFGPU_API_KEY" > $DSH_HOME/.credentials.yaml
           chmod 600 $DSH_HOME/.credentials.yaml
           cat > $DSH_HOME/settings.yaml <<'EOF'
-          llm-pi-ai:
-            providers:
-              cfgpu:
-                displayName: cfgpu
-                apiKeyEnv: CFGPU_API_KEY
-                api: openai-completions
-                baseURL: https://www.cfgpu.com/userapi/v1/model/v1
-                models:
-                  - { id: z-ai/glm-5.2, name: GLM-5.2, contextWindow: 1000000, maxTokens: 32000 }
-          agent-default-model:
-            provider: cfgpu
-            model: z-ai/glm-5.2
-          EOF
+llm-pi-ai:
+  providers:
+    cfgpu:
+      displayName: cfgpu
+      apiKeyEnv: CFGPU_API_KEY
+      api: openai-completions
+      baseURL: https://www.cfgpu.com/userapi/v1/model/v1
+      models:
+        - id: z-ai/glm-5.2
+          name: GLM-5.2
+          contextWindow: 1000000
+          maxTokens: 32000
+agent-default-model:
+  provider: cfgpu
+  model: z-ai/glm-5.2
+EOF
           npm install -g @deepseek-ai/dsh
           dsh plugin --profile headless add github:r600a-code/dsh-swarm-router
 
