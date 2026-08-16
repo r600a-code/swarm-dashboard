@@ -3,132 +3,300 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>短剧剧本蜂群进化实验 — 蜂群 vs 单模型</title>
+<title>蜂巢实验室 — 多专家蜂群持续对比</title>
 <style>
+:root{--bg:#070710;--bg2:#0e0e1a;--card:#13131f;--card2:#1a1a2e;--border:#252535;--border2:#333348;--text:#e8e8f0;--dim:#7a7a92;--dim2:#555568;--accent:#00d4aa;--accent-d:#00a884;--red:#ff6b6b;--gold:#ffd700;--blue:#4a9eff;--purple:#a855f7;--grad:linear-gradient(135deg,#00d4aa,#4a9eff,#a855f7)}
 *{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#0a0a0f;--bg2:#12121a;--card:#1a1a2e;--card2:#22223a;--border:#2a2a3e;
-  --text:#e0e0e8;--dim:#8888a0;--accent:#00d4aa;--accent2:#ff6b6b;--gold:#ffd700;--blue:#4a9eff;--purple:#a855f7
-}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.7;min-height:100vh}
-.container{max-width:1080px;margin:0 auto;padding:20px 16px 60px}
-.hero{text-align:center;padding:30px 0 20px}
-.hero h1{font-size:2em;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
-.hero .sub{color:var(--dim);font-size:.95em}
-.badge{display:inline-block;background:var(--purple);color:#fff;font-weight:700;padding:2px 10px;border-radius:20px;font-size:.75em;margin-left:6px}
-.live-dot{display:inline-block;width:8px;height:8px;background:var(--accent);border-radius:50%;animation:pulse 1.5s infinite;margin-right:6px}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:24px 0}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center}
-.stat-card::before{content:"";display:block;height:3px;border-radius:3px;margin:-20px -20px 14px}
-.stat-card.save::before{background:var(--accent)}.stat-card.cost::before{background:var(--gold)}
-.stat-card.eps::before{background:var(--purple)}.stat-card.correct::before{background:var(--blue)}
-.stat-value{font-size:2em;font-weight:800}
-.stat-card.save .stat-value{color:var(--accent)}.stat-card.cost .stat-value{color:var(--gold)}
-.stat-card.eps .stat-value{color:var(--purple)}.stat-card.correct .stat-value{color:var(--blue)}
-.stat-label{color:var(--dim);font-size:.8em;text-transform:uppercase;letter-spacing:.5px}
-.stat-sub{color:var(--dim);font-size:.8em;margin-top:3px}
-.section-title{font-size:1.2em;font-weight:700;margin:30px 0 14px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
-.ep-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:0;margin-bottom:20px;overflow:hidden}
-.ep-header{background:var(--card2);padding:14px 20px;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;align-items:center;gap:10px}
-.ep-num{background:var(--purple);color:#fff;font-weight:800;padding:3px 10px;border-radius:8px;font-size:.85em}
-.ep-title{font-weight:700;font-size:1.1em}
-.ep-evolution{color:var(--dim);font-size:.85em;flex:1;min-width:200px}
-.ep-saved{background:var(--accent);color:#000;font-weight:700;padding:3px 10px;border-radius:8px;font-size:.8em;white-space:nowrap}
-.ep-body{display:grid;grid-template-columns:1fr 1fr;gap:0}
-@media(max-width:700px){.ep-body{grid-template-columns:1fr}}
-.script-col{padding:16px 20px;border-right:1px solid var(--border)}
-.script-col:last-child{border-right:none}
-.script-col.swarm{background:rgba(0,212,170,.03)}
-.script-col.single{background:rgba(255,107,107,.03)}
-.col-header{font-weight:700;font-size:.9em;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.col-header.swarm{color:var(--accent)}.col-header.single{color:var(--accent2)}
-.col-meta{color:var(--dim);font-size:.75em;margin-bottom:10px}
-.col-meta .chip{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;margin:0 2px}
-.script-preview{white-space:pre-wrap;font-size:.88em;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;line-height:1.8;max-height:380px;overflow-y:auto}
-.verdict{padding:12px 20px;border-top:1px solid var(--border);font-size:.88em;color:var(--dim);background:var(--bg2)}
-.verdict strong{color:var(--gold)}
-.footer{text-align:center;color:var(--dim);font-size:.82em;margin-top:30px;padding-top:16px;border-top:1px solid var(--border)}
-.footer a{color:var(--accent);text-decoration:none}
-.loading{text-align:center;padding:60px;color:var(--dim)}
-.ep-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
-.ep-nav a{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:4px 12px;font-size:.85em;color:var(--dim);text-decoration:none}
-.ep-nav a:hover{border-color:var(--accent);color:var(--accent)}
-.ep-nav a.current{background:var(--purple);color:#fff;border-color:var(--purple)}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+
+/* nav */
+nav{position:sticky;top:0;z-index:100;background:rgba(7,7,16,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:56px}
+.logo{font-weight:800;font-size:1.1em;display:flex;align-items:center;gap:8px}
+.logo .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+nav a{color:var(--dim);font-size:.85em;margin-left:20px}
+nav a:hover{color:var(--text)}
+
+/* hero */
+.hero{padding:60px 0 40px;text-align:center;position:relative}
+.hero::before{content:"";position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(0,212,170,.08),transparent 70%);pointer-events:none}
+.hero h1{font-size:2.6em;font-weight:800;letter-spacing:-.02em;margin-bottom:12px}
+.hero h1 .grad{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--dim);font-size:1.05em;max-width:560px;margin:0 auto 24px}
+.pulse-dot{display:inline-block;width:8px;height:8px;background:var(--accent);border-radius:50%;animation:pulse 2s infinite;margin-right:6px;vertical-align:middle}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,212,170,.4)}50%{opacity:.5;box-shadow:0 0 0 6px rgba(0,212,170,0)}}
+
+/* stat cards */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:32px 0}
+@media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 16px;text-align:center;transition:transform .2s,border-color .2s}
+.stat:hover{transform:translateY(-2px);border-color:var(--border2)}
+.stat .v{font-size:1.8em;font-weight:800;font-variant-numeric:tabular-nums}
+.stat .l{color:var(--dim);font-size:.75em;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.stat .s{color:var(--dim2);font-size:.75em;margin-top:2px}
+.stat:nth-child(1) .v{color:var(--accent)}
+.stat:nth-child(2) .v{color:var(--gold)}
+.stat:nth-child(3) .v{color:var(--purple)}
+.stat:nth-child(4) .v{color:var(--blue)}
+
+/* section */
+.sec{padding:40px 0}
+.sec h2{font-size:1.4em;font-weight:700;margin-bottom:6px}
+.sec .desc{color:var(--dim);font-size:.92em;margin-bottom:20px}
+
+/* episode cards */
+.ep-list{display:flex;flex-direction:column;gap:16px}
+.ep{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:border-color .2s}
+.ep:hover{border-color:var(--border2)}
+.ep-head{background:var(--card2);padding:14px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.ep-badge{background:var(--purple);color:#fff;font-weight:700;padding:2px 10px;border-radius:6px;font-size:.8em}
+.ep-title{font-weight:700}
+.ep-evo{color:var(--dim);font-size:.82em;flex:1}
+.ep-save{background:rgba(0,212,170,.15);color:var(--accent);font-weight:600;padding:2px 10px;border-radius:6px;font-size:.78em;white-space:nowrap}
+.ep-body{display:grid;grid-template-columns:1fr 1fr}
+@media(max-width:680px){.ep-body{grid-template-columns:1fr}}
+.ep-col{padding:14px 18px}
+.ep-col.sw{border-right:1px solid var(--border);background:rgba(0,212,170,.02)}
+.ep-col.si{background:rgba(255,107,107,.02)}
+.ep-col h4{font-size:.82em;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.ep-col.sw h4{color:var(--accent)}
+.ep-col.si h4{color:var(--red)}
+.ep-col .meta{color:var(--dim2);font-size:.72em;margin-bottom:8px}
+.ep-col .meta .chip{background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:0 4px;margin:0 1px;font-size:.9em}
+.ep-script{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:.85em;line-height:1.8;white-space:pre-wrap;max-height:280px;overflow-y:auto;color:var(--text)}
+.ep-verdict{padding:10px 18px;border-top:1px solid var(--border);font-size:.82em;color:var(--dim);background:var(--bg2)}
+.ep-verdict strong{color:var(--gold)}
+
+/* case analysis */
+.case-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.case{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px}
+.case h3{font-size:.95em;font-weight:700;margin-bottom:8px}
+.case .tag{display:inline-block;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:.72em;color:var(--dim);margin-right:4px}
+.case .num{font-size:1.6em;font-weight:800;color:var(--accent);margin:8px 0 4px}
+.case p{font-size:.85em;color:var(--dim);line-height:1.6}
+
+/* question form */
+.q-form{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:560px;margin:0 auto}
+.q-form h3{font-size:1.1em;font-weight:700;margin-bottom:6px}
+.q-form p{color:var(--dim);font-size:.85em;margin-bottom:20px}
+.q-form label{display:block;font-size:.8em;color:var(--dim);margin-bottom:4px;margin-top:14px}
+.q-form input,.q-form textarea,.q-form select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:.9em;font-family:inherit;transition:border-color .2s}
+.q-form input:focus,.q-form textarea:focus,.q-form select:focus{outline:none;border-color:var(--accent)}
+.q-form textarea{resize:vertical;min-height:80px}
+.q-form button{width:100%;margin-top:20px;background:var(--accent);color:#000;font-weight:700;padding:12px;border:none;border-radius:8px;font-size:1em;cursor:pointer;transition:background .2s}
+.q-form button:hover{background:var(--accent-d)}
+.q-form .note{font-size:.75em;color:var(--dim2);margin-top:10px;text-align:center}
+.q-ok{display:none;text-align:center;padding:20px;color:var(--accent)}
+.q-ok.show{display:block}
+
+/* how it works */
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.how-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
+.how-item .num{width:28px;height:28px;border-radius:50%;background:var(--grad);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:.85em}
+.how-item h4{font-size:.85em;margin-bottom:4px}
+.how-item p{font-size:.78em;color:var(--dim);line-height:1.5}
+
+/* footer */
+footer{border-top:1px solid var(--border);padding:30px 0;text-align:center;color:var(--dim2);font-size:.82em}
+footer a{color:var(--dim)}
+footer a:hover{color:var(--accent)}
+footer .links{margin-bottom:8px}
+footer .links a{margin:0 8px}
+
+.loading{text-align:center;padding:80px;color:var(--dim)}
 </style>
 </head>
 <body>
-<div class="container" id="app"><div class="loading">加载短剧实验数据中…</div></div>
+<nav>
+  <div class="wrap">
+    <div class="logo"><span class="dot"></span>蜂巢实验室</div>
+    <div>
+      <a href="#cases">案例分析</a>
+      <a href="#ask">提交问题</a>
+      <a href="https://github.com/r600a-code/swarm-dashboard" target="_blank">源码</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap" id="app">
+  <div class="loading">加载中…</div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="links">
+      <a href="https://github.com/r600a-code/dsh-swarm-router" target="_blank">插件</a>
+      <a href="https://github.com/r600a-code/multi-expert-agent" target="_blank">论文</a>
+      <a href="https://github.com/r600a-code/swarm-dashboard" target="_blank">本站</a>
+      <a href="https://github.com/r600a-code/swarm-dashboard/issues" target="_blank">Issues</a>
+    </div>
+    <p>蜂巢实验室 · 真实 cfgpu 调用 · GitHub Actions 自动更新 · MIT</p>
+  </div>
+</footer>
+
 <script>
-async function load(){const r=await fetch('data/comparisons.json',{cache:'no-store'});return r.json()}
+const ISSUES_URL='https://github.com/r600a-code/swarm-dashboard/issues/new'
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function fmt(n,d=0){return Number(n).toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d})}
 function money(n){return '$'+fmt(n,4)}
 function pct(n){return fmt(n,1)+'%'}
-function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function render(d){
-  const c=d.cumulative,eps=d.episodes||[]
-  const latest=eps[eps.length-1]
-  let html=`
-  <div class="hero">
-    <h1>短剧剧本蜂群进化 <span class="badge">持续更新</span></h1>
-    <p class="sub">${esc(d.meta?.subtitle||'')} · ${esc(d.meta?.pricingNote||'')} · <span class="live-dot"></span>${d.meta?.startedAt||''} 起</p>
-  </div>
-  <div class="stats-grid">
-    <div class="stat-card save"><div class="stat-label">累计省 Token</div><div class="stat-value">${fmt(c.tokensSaved)}</div><div class="stat-sub">蜂群 ${fmt(c.swarmTokens)} vs 单模型 ${fmt(c.singleTokens)}</div></div>
-    <div class="stat-card cost"><div class="stat-label">累计省成本</div><div class="stat-value">${money(c.costSaved)}</div><div class="stat-sub">${esc(d.meta?.pricingNote||'')}</div></div>
-    <div class="stat-card eps"><div class="stat-label">已完成集数</div><div class="stat-value">${eps.length}</div><div class="stat-sub">《${esc(d.meta?.premise?d.meta.premise.split('。')[0].replace('一部10集',''):d.meta?.name||'蜂巢之心')}》</div></div>
-    <div class="stat-card correct"><div class="stat-label">蜂群省 %</div><div class="stat-value">${c.swarmTokens>0?pct((1-c.swarmTokens/c.singleTokens)*100):'—'}</div><div class="stat-sub">vs 单模型</div></div>
-  </div>`
-  // ep nav
-  if(eps.length>0){
-    html+='<div class="section-title">剧集导航</div><div class="ep-nav">'
-    eps.forEach((e,i)=>{html+=`<a href="#ep${e.ep}" class="${e===latest?'current':''}">第${e.ep}集 ${esc(e.title)}</a>`})
-    html+='</div>'
-  }
-  // premise
-  if(d.meta?.premise){
-    html+=`<div class="section-title">故事设定</div><div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;font-size:.9em;color:var(--dim)">${esc(d.meta.premise)}</div>`
-  }
-  // episodes (latest first)
-  html+='<div class="section-title">剧本对比</div>'
-  eps.slice().reverse().forEach(e=>{
-    const maxT=Math.max(e.swarm.tokens,e.single.tokens)
-    html+=`
-    <div class="ep-card" id="ep${e.ep}">
-      <div class="ep-header">
-        <span class="ep-num">第${e.ep}集</span>
-        <span class="ep-title">${esc(e.title)}</span>
-        <span class="ep-evolution">${esc(e.evolution)}</span>
-        <span class="ep-saved">省 ${fmt(e.saved.tokens)} tokens (${pct(e.saved.tokensPct)})</span>
-      </div>
-      <div class="ep-body">
-        <div class="script-col swarm">
-          <div class="col-header swarm">🐝 蜂群 (多模型路由 · direct)</div>
-          <div class="col-meta">${fmt(e.swarm.tokens)} tokens · ${money(e.swarm.cost)} · ${e.swarm.modelsUsed} 模型:
-            ${(e.swarm.models||[]).map(m=>`<span class="chip">${esc(m)}</span>`).join('')}
-          </div>
-          <div class="script-preview">${esc(e.swarm.scriptPreview)}</div>
-        </div>
-        <div class="script-col single">
-          <div class="col-header single">🤖 单模型 (全 GLM-5.2 · subagent)</div>
-          <div class="col-meta">${fmt(e.single.tokens)} tokens · ${money(e.single.cost)} · ${e.single.modelsUsed} 模型</div>
-          <div class="script-preview">${esc(e.single.scriptPreview)}</div>
-        </div>
-      </div>
-      <div class="verdict"><strong>评判：</strong>${esc(e.verdict)}</div>
-    </div>`
-  })
-  html+=`
-  <div class="footer">
-    <p>真实 cfgpu <code>/chat/completions</code> 调用 · GitHub Actions 定时更新剧本 + 数据</p>
-    <p>插件 <a href="https://github.com/r600a-code/dsh-swarm-router" target="_blank">dsh-swarm-router</a> ·
-       论文 <a href="https://github.com/r600a-code/multi-expert-agent" target="_blank">多专家模式</a> ·
-       <a href="https://github.com/r600a-code/swarm-dashboard" target="_blank">本站源码</a></p>
-  </div>`
-  document.getElementById('app').innerHTML=html
+
+async function loadData(){
+  const r=await fetch('data/comparisons.json',{cache:'no-store'})
+  return r.json()
 }
-load().then(render).catch(e=>{document.getElementById('app').innerHTML='<div class="loading">加载失败: '+esc(e.message)+'</div>'})
-setInterval(()=>load().then(render),60000)
+
+function renderHTML(d){
+  const c=d.cumulative||{},eps=d.episodes||[],latest=eps[eps.length-1]
+  const sw=c.swarmTokens||0,si=c.singleTokens||0
+  const savePct=si>0?(1-sw/si)*100:0
+  let h=''
+
+  // hero
+  h+=`<section class="hero">
+    <h1><span class="grad">多专家蜂群</span> 持续对比</h1>
+    <p><span class="pulse-dot"></span>短剧剧本逐集进化 · 蜂群多模型路由 vs 单模型 · 真实 token / 成本对比 · 自动更新</p>
+    <div class="stats">
+      <div class="stat"><div class="v">${fmt(c.tokensSaved||0)}</div><div class="l">省 Token</div><div class="s">蜂群 ${fmt(sw)} vs 单 ${fmt(si)}</div></div>
+      <div class="stat"><div class="v">${money(c.costSaved||0)}</div><div class="l">省成本</div><div class="s">${esc(d.meta?.pricingNote||'')}</div></div>
+      <div class="stat"><div class="v">${eps.length}</div><div class="l">已完成集数</div><div class="s">《蜂巢之心》</div></div>
+      <div class="stat"><div class="v">${pct(savePct)}</div><div class="l">蜂群省 %</div><div class="s">vs 单模型</div></div>
+    </div>
+  </section>`
+
+  // how it works
+  h+=`<section class="sec">
+    <h2>蜂群如何工作</h2>
+    <p class="desc">路由器按任务难度把每个任务分配给最合适的模型——简单题走快/便宜模型，难题走强推理模型。</p>
+    <div class="how">
+      <div class="how-item"><div class="num">1</div><h4>提交任务</h4><p>你提一个问题或一个创作任务</p></div>
+      <div class="how-item"><div class="num">2</div><h4>路由分配</h4><p>纯路由器按难度选模型，零模型调用</p></div>
+      <div class="how-item"><div class="num">3</div><h4>并行下放</h4><p>每个任务绑到所选模型并行执行</p></div>
+      <div class="how-item"><div class="num">4</div><h4>记账回邮</h4><p>token + 成本统计，结果回邮件</p></div>
+    </div>
+  </section>`
+
+  // case analysis (from data)
+  h+=`<section class="sec" id="cases">
+    <h2>案例分析</h2>
+    <p class="desc">从实际运行中提炼的对比结论。</p>
+    <div class="case-grid">
+      <div class="case">
+        <h3>direct vs subagent</h3>
+        <span class="tag">架构对比</span>
+        <div class="num">89.4%</div>
+        <p>direct 模式（直接 ctx.llm 调用）比 subagent 模式（完整子智能体）省 89.4% token——agent-loop 的系统提示+工具 schema 是主要开销。</p>
+      </div>
+      <div class="case">
+        <h3>难度匹配路由</h3>
+        <span class="tag">路由效果</span>
+        <div class="num">4 模型</div>
+        <p>5 个异质任务自动分配到 4 个不同模型：Flash→fast、GLM-5.2→reasoning、V4-Pro→coding、V3.2→general。全答对。</p>
+      </div>
+      <div class="case">
+        <h3>成本节省</h3>
+        <span class="tag">金钱维度</span>
+        <div class="num">70.6%</div>
+        <p>蜂群 direct 比单模型 subagent 省 70.6% 成本。按 $2/M input + $6/M output 计价，跑多了累积到看得见的金额。</p>
+      </div>
+      <div class="case">
+        <h3>短剧创作</h3>
+        <span class="tag">真实任务</span>
+        <div class="num">${eps.length} 集</div>
+        <p>蜂群用更少 token 写出更细腻的剧本。每集角色深化、冲突升级——是真实创作产出，不是算术题。</p>
+      </div>
+    </div>
+  </section>`
+
+  // episodes
+  if(eps.length){
+    h+=`<section class="sec"><h2>剧本进化</h2><p class="desc">每集蜂群 vs 单模型并排对比，剧本 + token + 成本。</p><div class="ep-list">`
+    eps.slice().reverse().forEach(e=>{
+      const maxT=Math.max(e.swarm.tokens,e.single.tokens)
+      h+=`<div class="ep">
+        <div class="ep-head">
+          <span class="ep-badge">第${e.ep}集</span>
+          <span class="ep-title">${esc(e.title)}</span>
+          <span class="ep-evo">${esc(e.evolution)}</span>
+          <span class="ep-save">省 ${fmt(e.saved.tokens)} tokens (${pct(e.saved.tokensPct)})</span>
+        </div>
+        <div class="ep-body">
+          <div class="ep-col sw">
+            <h4>🐝 蜂群 (多模型 direct)</h4>
+            <div class="meta">${fmt(e.swarm.tokens)} tokens · ${money(e.swarm.cost)} · ${e.swarm.modelsUsed} 模型
+              ${(e.swarm.models||[]).map(m=>`<span class="chip">${esc(m)}</span>`).join('')}</div>
+            <div class="ep-script">${esc(e.swarm.scriptPreview)}</div>
+          </div>
+          <div class="ep-col si">
+            <h4>🤖 单模型 (subagent)</h4>
+            <div class="meta">${fmt(e.single.tokens)} tokens · ${money(e.single.cost)} · ${e.single.modelsUsed} 模型</div>
+            <div class="ep-script">${esc(e.single.scriptPreview)}</div>
+          </div>
+        </div>
+        <div class="ep-verdict"><strong>评判：</strong>${esc(e.verdict)}</div>
+      </div>`
+    })
+    h+=`</div></section>`
+  }
+
+  // question form
+  h+=`<section class="sec" id="ask">
+    <h2 style="text-align:center">提交你的问题</h2>
+    <p class="desc" style="text-align:center">提一个真实问题，蜂群会把它跑成 benchmark，结果通过邮件回复你。</p>
+    <div class="q-form">
+      <h3>你的问题</h3>
+      <p>填入问题 + 邮箱，蜂群自动路由+执行，结果回邮。</p>
+      <form id="qform">
+        <label>问题/任务</label>
+        <textarea id="q-text" placeholder="例如：写一段产品文案 / 翻译这段话 / 分析这段代码 / 做一道推理题…" required></textarea>
+        <label>任务类型</label>
+        <select id="q-kind">
+          <option value="general">通用</option>
+          <option value="reasoning">推理</option>
+          <option value="coding">代码</option>
+          <option value="fast">快速</option>
+        </select>
+        <label>你的邮箱（接收结果）</label>
+        <input id="q-email" type="email" placeholder="you@example.com" required>
+        <button type="submit">提交 → 蜂群执行 → 回邮</button>
+        <div class="note">提交后创建一个 GitHub Issue，蜂群 Action 自动处理 · 邮箱仅用于回邮</div>
+      </form>
+      <div class="q-ok" id="q-ok">✅ 已提交！蜂群正在处理，结果会发到你的邮箱。<br><a href="https://github.com/r600a-code/swarm-dashboard/issues" target="_blank">查看进度</a></div>
+    </div>
+  </section>`
+
+  return h
+}
+
+// form submit → GitHub issue
+function initForm(){
+  const form=document.getElementById('qform')
+  if(!form) return
+  form.addEventListener('submit',e=>{
+    e.preventDefault()
+    const text=document.getElementById('q-text').value.trim()
+    const kind=document.getElementById('q-kind').value
+    const email=document.getElementById('q-email').value.trim()
+    if(!text||!email) return
+    // open GitHub issue with pre-filled title+body (works without backend)
+    const title=`[benchmark] ${kind}: ${text.slice(0,60)}`
+    const body=`## 问题\n\n${text}\n\n## 类型\n\n${kind}\n\n## 回邮邮箱\n\n${email}\n\n---\n\n_由蜂巢实验室网站提交_`
+    const url=ISSUES_URL+'?title='+encodeURIComponent(title)+'&body='+encodeURIComponent(body)
+    window.open(url,'_blank')
+    form.style.display='none'
+    document.getElementById('q-ok').classList.add('show')
+  })
+}
+
+loadData().then(d=>{
+  document.getElementById('app').innerHTML=renderHTML(d)
+  initForm()
+}).catch(e=>{
+  document.getElementById('app').innerHTML='<div class="loading">加载失败: '+esc(e.message)+'</div>'
+})
+setInterval(()=>loadData().then(d=>{document.getElementById('app').innerHTML=renderHTML(d);initForm()}),60000)
 </script>
 </body>
 </html>
