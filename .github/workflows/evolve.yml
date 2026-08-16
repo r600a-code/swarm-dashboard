@@ -2,8 +2,8 @@ name: evolve-script
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # 每 6 小时进化一集
-  workflow_dispatch: {}
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
 
 permissions:
   contents: write
