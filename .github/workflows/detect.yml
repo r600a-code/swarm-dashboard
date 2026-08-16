@@ -1,0 +1,62 @@
+name: detect-changes
+
+on:
+  schedule:
+    - cron: '0 2,14 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check for new episodes and stats changes
+        id: check
+        run: |
+          # count current episodes
+          EP_COUNT=$(node -e "const d=require('./data/comparisons.json'); console.log((d.episodes||[]).length)")
+          echo "episodes=$EP_COUNT" >> "$GITHUB_OUTPUT"
+
+          # check if runtime data exists
+          RUNTIME_EXISTS="no"
+          if [ -f data/runtime/usage.json ]; then RUNTIME_EXISTS="yes"; fi
+          echo "runtime=$RUNTIME_EXISTS" >> "$GITHUB_OUTPUT"
+
+      - name: Summary report
+        run: |
+          echo "## 每日检测报告" > /tmp/report.md
+          echo "" >> /tmp/report.md
+          echo "- 当前集数: ${{ steps.check.outputs.episodes }}" >> /tmp/report.md
+          echo "- runtime 数据: ${{ steps.check.outputs.runtime }}" >> /tmp/report.md
+          echo "- 检测时间: $(date -u)" >> /tmp/report.md
+          echo "" >> /tmp/report.md
+          echo "网站: https://r600a-code.github.io/swarm-dashboard/" >> /tmp/report.md
+          cat /tmp/report.md
+
+      - name: Create issue if new changes detected
+        if: steps.check.outputs.episodes != github.event.repository.updated_at
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('/tmp/report.md', 'utf8');
+            const epCount = '${{ steps.check.outputs.episodes }}';
+            // only create issue if there are episodes (avoid noise on first run)
+            if (parseInt(epCount) > 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `检测报告: ${epCount} 集已生成 (${new Date().toISOString().slice(0,10)})`,
+                body: report,
+                labels: ['detect', 'report']
+              });
+            }

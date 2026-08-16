@@ -1,0 +1,155 @@
+{
+  "totals": {
+    "prompt": 329,
+    "completion": 1513,
+    "reasoning": 0,
+    "total": 1842,
+    "calls": 5,
+    "tasks": 5
+  },
+  "byProvider": {
+    "cfgpu-swarm": {
+      "prompt": 329,
+      "completion": 1513,
+      "reasoning": 0,
+      "total": 1842,
+      "calls": 5,
+      "name": "DeepSeek V4 Flash"
+    }
+  },
+  "byModel": {
+    "cfgpu-swarm/deepseek/deepseek-v4-flash": {
+      "prompt": 44,
+      "completion": 37,
+      "reasoning": 0,
+      "total": 81,
+      "calls": 1,
+      "name": "DeepSeek V4 Flash"
+    },
+    "cfgpu-swarm/z-ai/glm-5.2": {
+      "prompt": 90,
+      "completion": 441,
+      "reasoning": 0,
+      "total": 531,
+      "calls": 2,
+      "name": "GLM-5.2"
+    },
+    "cfgpu-swarm/deepseek/deepseek-v4-pro": {
+      "prompt": 134,
+      "completion": 603,
+      "reasoning": 0,
+      "total": 737,
+      "calls": 1,
+      "name": "DeepSeek V4 Pro"
+    },
+    "cfgpu-swarm/deepseek/deepseek-v3.2-251201": {
+      "prompt": 61,
+      "completion": 432,
+      "reasoning": 0,
+      "total": 493,
+      "calls": 1,
+      "name": "DeepSeek V3.2"
+    }
+  },
+  "byKind": {
+    "fast": {
+      "prompt": 44,
+      "completion": 37,
+      "reasoning": 0,
+      "total": 81,
+      "calls": 1,
+      "name": "DeepSeek V4 Flash"
+    },
+    "reasoning": {
+      "prompt": 90,
+      "completion": 441,
+      "reasoning": 0,
+      "total": 531,
+      "calls": 2,
+      "name": "GLM-5.2"
+    },
+    "coding": {
+      "prompt": 134,
+      "completion": 603,
+      "reasoning": 0,
+      "total": 737,
+      "calls": 1,
+      "name": "DeepSeek V4 Pro"
+    },
+    "general": {
+      "prompt": 61,
+      "completion": 432,
+      "reasoning": 0,
+      "total": 493,
+      "calls": 1,
+      "name": "DeepSeek V3.2"
+    }
+  },
+  "records": [
+    {
+      "ts": 1786872391964,
+      "taskId": "t1",
+      "kind": "fast",
+      "provider": "cfgpu-swarm",
+      "model": "deepseek/deepseek-v4-flash",
+      "modelName": "DeepSeek V4 Flash",
+      "prompt": 44,
+      "completion": 37,
+      "reasoning": 0,
+      "total": 81,
+      "elapsedMs": 1584
+    },
+    {
+      "ts": 1786872395804,
+      "taskId": "t2",
+      "kind": "reasoning",
+      "provider": "cfgpu-swarm",
+      "model": "z-ai/glm-5.2",
+      "modelName": "GLM-5.2",
+      "prompt": 82,
+      "completion": 345,
+      "reasoning": 0,
+      "total": 427,
+      "elapsedMs": 5423
+    },
+    {
+      "ts": 1786872397314,
+      "taskId": "t5",
+      "kind": "reasoning",
+      "provider": "cfgpu-swarm",
+      "model": "z-ai/glm-5.2",
+      "modelName": "GLM-5.2",
+      "prompt": 8,
+      "completion": 96,
+      "reasoning": 0,
+      "total": 104,
+      "elapsedMs": 6933
+    },
+    {
+      "ts": 1786872398915,
+      "taskId": "t3",
+      "kind": "coding",
+      "provider": "cfgpu-swarm",
+      "model": "deepseek/deepseek-v4-pro",
+      "modelName": "DeepSeek V4 Pro",
+      "prompt": 134,
+      "completion": 603,
+      "reasoning": 0,
+      "total": 737,
+      "elapsedMs": 8534
+    },
+    {
+      "ts": 1786872404355,
+      "taskId": "t4",
+      "kind": "general",
+      "provider": "cfgpu-swarm",
+      "model": "deepseek/deepseek-v3.2-251201",
+      "modelName": "DeepSeek V3.2",
+      "prompt": 61,
+      "completion": 432,
+      "reasoning": 0,
+      "total": 493,
+      "elapsedMs": 13974
+    }
+  ]
+}
