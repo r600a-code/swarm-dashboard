@@ -1,0 +1,50 @@
+{
+  "name": "dsh-swarm-router minimal benchmark",
+  "description": "A minimal-but-real subset that exercises every route kind. The headless agent calls swarm_dispatch once with these tasks; each task must land on an appropriate model AND produce a correct real answer (not just 'finished'). Verification expectations are declarative so success is judged by content, not by the run completing.",
+  "expectDistinctModelsAtLeast": 3,
+  "expectOpenrouterConfigured": false,
+  "tasks": [
+    {
+      "id": "t1-fast",
+      "kind": "fast",
+      "maxTokens": 320,
+      "prompt": "Compute 17 * 23 and reply with ONLY the integer, nothing else.",
+      "expectContains": ["391"],
+      "expectNotContains": ["="],
+      "purpose": "Fast/cheap model handles a trivial arithmetic fact."
+    },
+    {
+      "id": "t2-reasoning",
+      "kind": "reasoning",
+      "maxTokens": 1024,
+      "prompt": "A bat and a ball cost $1.10 in total. The bat costs $1.00 more than the ball. How much does the ball cost? Reply with ONLY the dollar amount, for example 0.05.",
+      "expectContains": ["0.05"],
+      "expectNotContains": ["0.10", "0.1 "],
+      "purpose": "Classic réflexion trap; a reasoning model must avoid 0.10."
+    },
+    {
+      "id": "t3-coding",
+      "kind": "coding",
+      "maxTokens": 1024,
+      "prompt": "Write a Python function `is_prime(n)` that returns True if n is prime, else False. Output ONLY the code, no explanation.",
+      "expectContains": ["def is_prime"],
+      "purpose": "Code generation routes to a coding-strong model."
+    },
+    {
+      "id": "t4-general",
+      "kind": "general",
+      "maxTokens": 512,
+      "prompt": "Translate this exact English sentence to Chinese: 'The swarm router assigns each task to the most suitable model.' Reply with ONLY the Chinese translation.",
+      "expectMatchesCjk": true,
+      "purpose": "General/translation routes to a strong general model."
+    },
+    {
+      "id": "t5-reasoning2",
+      "kind": "reasoning",
+      "maxTokens": 1024,
+      "prompt": "If it takes 5 machines 5 minutes to make 5 widgets, how long would 100 machines take to make 100 widgets? Reply with ONLY the number of minutes.",
+      "expectContains": ["5"],
+      "purpose": "Rate-reasoning trap; reasoning model must answer 5, not 100."
+    }
+  ]
+}

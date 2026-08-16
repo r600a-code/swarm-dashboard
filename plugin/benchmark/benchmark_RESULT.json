@@ -1,0 +1,255 @@
+{
+  "routed": {
+    "summary": {
+      "taskCount": 5,
+      "routedCount": 5,
+      "distinctModels": 4,
+      "distinctProviders": 1,
+      "openrouterConfigured": false
+    },
+    "assignments": [
+      {
+        "taskId": "t1-fast",
+        "kind": "fast",
+        "provider": "cfgpu-swarm",
+        "model": "deepseek/deepseek-v4-flash",
+        "modelName": "DeepSeek V4 Flash",
+        "rationale": "kind=\"fast\" -> cfgpu-swarm/deepseek/deepseek-v4-flash [coding, long-context, fast] strength=7 speed=8 cost=9; runners-up: MiniMax-M1, z-ai/glm-5, qwen3.6-plus",
+        "candidates": [
+          {
+            "id": "deepseek/deepseek-v4-flash",
+            "provider": "cfgpu-swarm",
+            "score": 39.6
+          },
+          {
+            "id": "MiniMax-M1",
+            "provider": "cfgpu-swarm",
+            "score": 33.3
+          },
+          {
+            "id": "z-ai/glm-5",
+            "provider": "cfgpu-swarm",
+            "score": 33.3
+          },
+          {
+            "id": "qwen3.6-plus",
+            "provider": "cfgpu-swarm",
+            "score": 29.4
+          },
+          {
+            "id": "doubao-seed-2.0-pro",
+            "provider": "cfgpu-swarm",
+            "score": 29.1
+          }
+        ]
+      },
+      {
+        "taskId": "t2-reasoning",
+        "kind": "reasoning",
+        "provider": "cfgpu-swarm",
+        "model": "z-ai/glm-5.2",
+        "modelName": "GLM-5.2",
+        "rationale": "kind=\"reasoning\" -> cfgpu-swarm/z-ai/glm-5.2 [reasoning, coding, long-context] strength=9 speed=5 cost=5; runners-up: deepseek/deepseek-v4-pro, qwen3-next-80b-a3b-thinking, qwen3-max-preview",
+        "candidates": [
+          {
+            "id": "z-ai/glm-5.2",
+            "provider": "cfgpu-swarm",
+            "score": 25.3
+          },
+          {
+            "id": "deepseek/deepseek-v4-pro",
+            "provider": "cfgpu-swarm",
+            "score": 21.812
+          },
+          {
+            "id": "qwen3-next-80b-a3b-thinking",
+            "provider": "cfgpu-swarm",
+            "score": 20.324
+          },
+          {
+            "id": "qwen3-max-preview",
+            "provider": "cfgpu-swarm",
+            "score": 19.812
+          },
+          {
+            "id": "qwen3.6-plus",
+            "provider": "cfgpu-swarm",
+            "score": 19.812
+          }
+        ]
+      },
+      {
+        "taskId": "t3-coding",
+        "kind": "coding",
+        "provider": "cfgpu-swarm",
+        "model": "deepseek/deepseek-v4-pro",
+        "modelName": "DeepSeek V4 Pro",
+        "rationale": "kind=\"coding\" -> cfgpu-swarm/deepseek/deepseek-v4-pro [reasoning, coding, long-context] strength=9 speed=4 cost=3; runners-up: z-ai/glm-5.2, deepseek/deepseek-v3.2-251201, moonshotai/kimi-k2.6",
+        "candidates": [
+          {
+            "id": "deepseek/deepseek-v4-pro",
+            "provider": "cfgpu-swarm",
+            "score": 25.3
+          },
+          {
+            "id": "z-ai/glm-5.2",
+            "provider": "cfgpu-swarm",
+            "score": 25.3
+          },
+          {
+            "id": "deepseek/deepseek-v3.2-251201",
+            "provider": "cfgpu-swarm",
+            "score": 23.3
+          },
+          {
+            "id": "moonshotai/kimi-k2.6",
+            "provider": "cfgpu-swarm",
+            "score": 23.3
+          },
+          {
+            "id": "qwen3-max-preview",
+            "provider": "cfgpu-swarm",
+            "score": 22.8
+          }
+        ]
+      },
+      {
+        "taskId": "t4-general",
+        "kind": "general",
+        "provider": "cfgpu-swarm",
+        "model": "deepseek/deepseek-v3.2-251201",
+        "modelName": "DeepSeek V3.2",
+        "rationale": "kind=\"general\" -> cfgpu-swarm/deepseek/deepseek-v3.2-251201 [coding, long-context] strength=8 speed=6 cost=5; runners-up: z-ai/glm-5.2, moonshotai/kimi-k2.6, deepseek/deepseek-v4-flash",
+        "candidates": [
+          {
+            "id": "deepseek/deepseek-v3.2-251201",
+            "provider": "cfgpu-swarm",
+            "score": 21.4
+          },
+          {
+            "id": "z-ai/glm-5.2",
+            "provider": "cfgpu-swarm",
+            "score": 20.8
+          },
+          {
+            "id": "moonshotai/kimi-k2.6",
+            "provider": "cfgpu-swarm",
+            "score": 20.8
+          },
+          {
+            "id": "deepseek/deepseek-v4-flash",
+            "provider": "cfgpu-swarm",
+            "score": 19.8
+          },
+          {
+            "id": "qwen3.6-plus",
+            "provider": "cfgpu-swarm",
+            "score": 19.7
+          }
+        ]
+      },
+      {
+        "taskId": "t5-reasoning2",
+        "kind": "reasoning",
+        "provider": "cfgpu-swarm",
+        "model": "z-ai/glm-5.2",
+        "modelName": "GLM-5.2",
+        "rationale": "kind=\"reasoning\" -> cfgpu-swarm/z-ai/glm-5.2 [reasoning, coding, long-context] strength=9 speed=5 cost=5; runners-up: deepseek/deepseek-v4-pro, qwen3-next-80b-a3b-thinking, qwen3-max-preview",
+        "candidates": [
+          {
+            "id": "z-ai/glm-5.2",
+            "provider": "cfgpu-swarm",
+            "score": 25.3
+          },
+          {
+            "id": "deepseek/deepseek-v4-pro",
+            "provider": "cfgpu-swarm",
+            "score": 21.812
+          },
+          {
+            "id": "qwen3-next-80b-a3b-thinking",
+            "provider": "cfgpu-swarm",
+            "score": 20.324
+          },
+          {
+            "id": "qwen3-max-preview",
+            "provider": "cfgpu-swarm",
+            "score": 19.812
+          },
+          {
+            "id": "qwen3.6-plus",
+            "provider": "cfgpu-swarm",
+            "score": 19.812
+          }
+        ]
+      }
+    ]
+  },
+  "results": [
+    {
+      "taskId": "t1-fast",
+      "kind": "fast",
+      "provider": "cfgpu-swarm",
+      "model": "deepseek/deepseek-v4-flash",
+      "modelName": "DeepSeek V4 Flash",
+      "ok": true,
+      "answer": "391",
+      "answerPreview": "391",
+      "elapsedMs": 2536,
+      "error": "",
+      "stopReason": "completed"
+    },
+    {
+      "taskId": "t2-reasoning",
+      "kind": "reasoning",
+      "provider": "cfgpu-swarm",
+      "model": "z-ai/glm-5.2",
+      "modelName": "GLM-5.2",
+      "ok": true,
+      "answer": "0.05",
+      "answerPreview": "0.05",
+      "elapsedMs": 2152,
+      "error": "",
+      "stopReason": "completed"
+    },
+    {
+      "taskId": "t3-coding",
+      "kind": "coding",
+      "provider": "cfgpu-swarm",
+      "model": "deepseek/deepseek-v4-pro",
+      "modelName": "DeepSeek V4 Pro",
+      "ok": true,
+      "answer": "```python\ndef is_prime(n):\n    if n < 2:\n        return False\n    if n == 2:\n        return True\n    if n % 2 == 0:\n        return False\n    i = 3\n    while i * i <= n:\n        if n % i == 0:\n            return False\n        i += 2\n    return True\n```",
+      "answerPreview": "```python\ndef is_prime(n):\n    if n < 2:\n        return False\n    if n == 2:\n        return True\n    if n % 2 == 0:\n        return False\n    i = 3\n    while i * i <= n:\n        if n % i == 0:\n            return False\n        i += 2\n    retu",
+      "elapsedMs": 2771,
+      "error": "",
+      "stopReason": "completed"
+    },
+    {
+      "taskId": "t4-general",
+      "kind": "general",
+      "provider": "cfgpu-swarm",
+      "model": "deepseek/deepseek-v3.2-251201",
+      "modelName": "DeepSeek V3.2",
+      "ok": true,
+      "answer": "集群路由器将每个任务分配给最合适的模型。",
+      "answerPreview": "集群路由器将每个任务分配给最合适的模型。",
+      "elapsedMs": 11641,
+      "error": "",
+      "stopReason": "completed"
+    },
+    {
+      "taskId": "t5-reasoning2",
+      "kind": "reasoning",
+      "provider": "cfgpu-swarm",
+      "model": "z-ai/glm-5.2",
+      "modelName": "GLM-5.2",
+      "ok": true,
+      "answer": "5",
+      "answerPreview": "5",
+      "elapsedMs": 1841,
+      "error": "",
+      "stopReason": "completed"
+    }
+  ]
+}

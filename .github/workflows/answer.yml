@@ -52,7 +52,7 @@ jobs:
         run: |
           npm install -g pnpm
           npm install -g @deepseek-ai/dsh
-          dsh plugin --profile headless add github:r600a-code/dsh-swarm-router
+          dsh plugin --profile headless add ./plugin
           Q=$(cat /tmp/q.txt)
           KIND=$(cat /tmp/kind.txt)
           node -e "const fs=require('fs'); const q=fs.readFileSync('/tmp/q.txt','utf8').trim(); const kind=fs.readFileSync('/tmp/kind.txt','utf8').trim(); const tasks=[{id:'user-q',kind:kind,maxTokens:2000,prompt:q}]; fs.writeFileSync('/tmp/prompt.txt','Call swarm_dispatch with mode \"direct\" and tasks '+JSON.stringify(tasks)+'. Output ONLY the results array JSON, then stop.')"

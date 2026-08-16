@@ -30,11 +30,11 @@ jobs:
           chmod 600 $DSH_HOME/.credentials.yaml
           node -e "require('fs').writeFileSync(process.env.DSH_HOME+'/settings.yaml', 'llm-pi-ai:\n  providers:\n    cfgpu:\n      displayName: cfgpu\n      apiKeyEnv: CFGPU_API_KEY\n      api: openai-completions\n      baseURL: https://www.cfgpu.com/userapi/v1/model/v1\n      models:\n        - id: z-ai/glm-5.2\n          name: GLM-5.2\n          contextWindow: 1000000\n          maxTokens: 32000\nagent-default-model:\n  provider: cfgpu\n  model: z-ai/glm-5.2\n')"
 
-      - name: Install pnpm + dsh + swarm-router
+      - name: Install pnpm + dsh + swarm-router (from local plugin/)
         run: |
           npm install -g pnpm
           npm install -g @deepseek-ai/dsh
-          dsh plugin --profile headless add github:r600a-code/dsh-swarm-router
+          dsh plugin --profile headless add ./plugin
 
       - name: Read current episode number
         id: ep

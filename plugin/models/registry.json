@@ -1,0 +1,47 @@
+{
+  "$schema": "./registry.schema.json",
+  "comment": "The model aggregation registry. To add a model, append an entry under the right provider and open a PR (see CONTRIBUTING.md). Run `node scripts/validate-registry.mjs` before submitting — CI runs the same check.",
+  "providers": {
+    "cfgpu-swarm": {
+      "displayName": "cfgpu (swarm)",
+      "api": "openai-completions",
+      "baseURL": "https://www.cfgpu.com/userapi/v1/model/v1",
+      "apiKeyEnv": "CFGPU_API_KEY",
+      "defaultContextWindow": 128000,
+      "defaultMaxTokens": 32000,
+      "models": [
+        { "id": "deepseek/deepseek-v4-pro",  "name": "DeepSeek V4 Pro",         "reasoning": true,  "coding": true,  "longContext": true,  "fast": false, "strength": 9, "speed": 4, "cost": 3, "contextWindow": 128000,  "maxTokens": 32000 },
+        { "id": "z-ai/glm-5.2",              "name": "GLM-5.2",                 "reasoning": true,  "coding": true,  "longContext": true,  "fast": false, "strength": 9, "speed": 5, "cost": 5, "contextWindow": 1000000, "maxTokens": 32000 },
+        { "id": "qwen3-max-preview",         "name": "Qwen3 Max Preview",       "reasoning": true,  "coding": true,  "longContext": true,  "fast": false, "strength": 8, "speed": 5, "cost": 5, "contextWindow": 128000,  "maxTokens": 32000 },
+        { "id": "qwen3.6-plus",              "name": "Qwen3.6 Plus",            "reasoning": true,  "coding": true,  "longContext": true,  "fast": false, "strength": 8, "speed": 6, "cost": 6, "contextWindow": 128000,  "maxTokens": 32000 },
+        { "id": "deepseek/deepseek-v3.2-251201", "name": "DeepSeek V3.2",      "reasoning": false, "coding": true,  "longContext": true,  "fast": false, "strength": 8, "speed": 6, "cost": 5, "contextWindow": 128000,  "maxTokens": 32000 },
+        { "id": "moonshotai/kimi-k2.6",      "name": "Kimi K2.6",              "reasoning": false, "coding": true,  "longContext": true,  "fast": false, "strength": 8, "speed": 5, "cost": 5, "contextWindow": 256000,  "maxTokens": 32000 },
+        { "id": "moonshotai/kimi-k2.5",      "name": "Kimi K2.5",              "reasoning": false, "coding": true,  "longContext": true,  "fast": false, "strength": 7, "speed": 6, "cost": 6, "contextWindow": 256000,  "maxTokens": 32000 },
+        { "id": "z-ai/glm-5.1",              "name": "GLM-5.1",                 "reasoning": false, "coding": true,  "longContext": true,  "fast": false, "strength": 7, "speed": 6, "cost": 6, "contextWindow": 1000000, "maxTokens": 32000 },
+        { "id": "deepseek-v3",               "name": "DeepSeek V3",            "reasoning": false, "coding": true,  "longContext": true,  "fast": false, "strength": 6, "speed": 6, "cost": 6, "contextWindow": 128000,  "maxTokens": 32000 },
+        { "id": "minimax/minimax-m2.5",      "name": "Minimax M2.5",           "reasoning": false, "coding": true,  "longContext": false, "fast": false, "strength": 6, "speed": 6, "cost": 6, "contextWindow": 200000,  "maxTokens": 32000 },
+        { "id": "doubao-seed-2.0-pro",       "name": "Doubao Seed 2.0 Pro",    "reasoning": false, "coding": true,  "longContext": true,  "fast": false, "strength": 7, "speed": 6, "cost": 6, "contextWindow": 128000,  "maxTokens": 32000 },
+        { "id": "z-ai/glm-5",               "name": "GLM-5",                  "reasoning": false, "coding": true,  "longContext": false, "fast": false, "strength": 6, "speed": 7, "cost": 7, "contextWindow": 128000,  "maxTokens": 32000 },
+        { "id": "MiniMax-M1",               "name": "Minimax M1",             "reasoning": false, "coding": false, "longContext": false, "fast": false, "strength": 6, "speed": 7, "cost": 7, "contextWindow": 1000000, "maxTokens": 32000 },
+        { "id": "deepseek/deepseek-v4-flash", "name": "DeepSeek V4 Flash",    "reasoning": false, "coding": true,  "longContext": true,  "fast": true,  "strength": 7, "speed": 8, "cost": 9, "contextWindow": 128000,  "maxTokens": 32000 },
+        { "id": "qwen3-next-80b-a3b-thinking", "name": "Qwen3 Next Thinking",  "reasoning": true,  "coding": true,  "longContext": true,  "fast": false, "strength": 8, "speed": 4, "cost": 4, "contextWindow": 256000,  "maxTokens": 32000 },
+        { "id": "qwen3-32b",                "name": "Qwen3-32B (thinking)",    "reasoning": true,  "coding": true,  "longContext": false, "fast": false, "strength": 7, "speed": 3, "cost": 8, "contextWindow": 128000,  "maxTokens": 32000, "unstable": true },
+        { "id": "deepseek/deepseek-v3.1-terminus-thinking", "name": "DeepSeek V3.1 Terminus Thinking", "reasoning": true, "coding": true, "longContext": true, "fast": false, "strength": 8, "speed": 4, "cost": 3, "contextWindow": 128000, "maxTokens": 32000, "unstable": true },
+        { "id": "qwen3-30b-a3b-thinking-2507", "name": "Qwen3 30B Thinking",   "reasoning": true,  "coding": true,  "longContext": false, "fast": false, "strength": 7, "speed": 4, "cost": 6, "contextWindow": 128000,  "maxTokens": 32000, "unstable": true }
+      ]
+    },
+    "openrouter": {
+      "displayName": "OpenRouter",
+      "api": "openai-completions",
+      "baseURL": "https://openrouter.ai/api/v1",
+      "apiKeyEnv": "OPENROUTER_API_KEY",
+      "defaultContextWindow": 128000,
+      "defaultMaxTokens": 32000,
+      "models": [
+        { "id": "qwen/qwen3.8-27b",            "name": "Qwen3.8 27B (OpenRouter)",  "reasoning": false, "coding": true,  "longContext": true,  "fast": true,  "strength": 6, "speed": 8, "cost": 8, "contextWindow": 262144, "maxTokens": 32000 },
+        { "id": "deepseek/deepseek-chat-v3.1", "name": "DeepSeek V3.1 (OpenRouter)", "reasoning": false, "coding": true,  "longContext": true,  "fast": true,  "strength": 7, "speed": 8, "cost": 8, "contextWindow": 128000,  "maxTokens": 32000 },
+        { "id": "z-ai/glm-4.6",                "name": "GLM-4.6 (OpenRouter)",      "reasoning": false, "coding": true,  "longContext": true,  "fast": false, "strength": 7, "speed": 6, "cost": 6, "contextWindow": 128000,  "maxTokens": 32000 }
+      ]
+    }
+  }
+}

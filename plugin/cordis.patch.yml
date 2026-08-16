@@ -1,0 +1,68 @@
+# dsh-swarm-router bundle patch.
+#
+# Two coordinated overrides of dsh-base:
+#
+# 1. llm-pi-ai — give the (otherwise dormant) pi-ai twin its OWN routes for the
+#    swarm's model catalog. These keys are chosen DISTINCT from the machine's
+#    settings-driven `cfgpu` route on purpose: llm-pi-ai merges provider routes
+#    by key (composition base ∪ settings), so `cfgpu-swarm` and `openrouter`
+#    coexist with `cfgpu` rather than fighting it. The orchestrator model keeps
+#    using the settings `cfgpu` route; the swarm children use `cfgpu-swarm`.
+#    A patch replaces a row's whole config, so the dormant base row gains exactly
+#    these providers and no others from this layer.
+#
+# 2. swarm-router — the plugin that turns routing decisions into real in-process
+#    subagents bound per task to the chosen provider+model.
+
+- id: llm-pi-ai
+  name: '@deepseek-ai/dsh-llm-pi-ai'
+  config:
+    providers:
+      cfgpu-swarm:
+        displayName: cfgpu (swarm)
+        apiKeyEnv: CFGPU_API_KEY
+        api: openai-completions
+        baseURL: https://www.cfgpu.com/userapi/v1/model/v1
+        defaultContextWindow: 128000
+        defaultMaxTokens: 32000
+        models:
+          - { id: deepseek/deepseek-v4-pro,  name: DeepSeek V4 Pro,        contextWindow: 128000, maxTokens: 32000 }
+          - { id: z-ai/glm-5.2,              name: GLM-5.2,                contextWindow: 1000000, maxTokens: 32000 }
+          - { id: qwen3-max-preview,         name: Qwen3 Max Preview,      contextWindow: 128000, maxTokens: 32000 }
+          - { id: qwen3.6-plus,              name: Qwen3.6 Plus,           contextWindow: 128000, maxTokens: 32000 }
+          - { id: deepseek/deepseek-v3.2-251201, name: DeepSeek V3.2,      contextWindow: 128000, maxTokens: 32000 }
+          - { id: moonshotai/kimi-k2.6,      name: Kimi K2.6,             contextWindow: 256000, maxTokens: 32000 }
+          - { id: moonshotai/kimi-k2.5,      name: Kimi K2.5,             contextWindow: 256000, maxTokens: 32000 }
+          - { id: z-ai/glm-5.1,              name: GLM-5.1,               contextWindow: 1000000, maxTokens: 32000 }
+          - { id: deepseek-v3,               name: DeepSeek V3,           contextWindow: 128000, maxTokens: 32000 }
+          - { id: minimax/minimax-m2.5,      name: Minimax M2.5,          contextWindow: 200000, maxTokens: 32000 }
+          - { id: doubao-seed-2.0-pro,       name: Doubao Seed 2.0 Pro,   contextWindow: 128000, maxTokens: 32000 }
+          - { id: z-ai/glm-5,               name: GLM-5,                  contextWindow: 128000, maxTokens: 32000 }
+          - { id: MiniMax-M1,               name: Minimax M1,            contextWindow: 1000000, maxTokens: 32000 }
+          - { id: deepseek/deepseek-v4-flash, name: DeepSeek V4 Flash,    contextWindow: 128000, maxTokens: 32000 }
+          - { id: qwen3-next-80b-a3b-thinking, name: Qwen3 Next Thinking, contextWindow: 256000, maxTokens: 32000 }
+          - { id: qwen3-32b,                name: Qwen3-32B (thinking),   contextWindow: 128000, maxTokens: 32000 }
+          - { id: deepseek/deepseek-v3.1-terminus-thinking, name: DeepSeek V3.1 Terminus Thinking, contextWindow: 128000, maxTokens: 32000 }
+          - { id: qwen3-30b-a3b-thinking-2507, name: Qwen3 30B Thinking, contextWindow: 128000, maxTokens: 32000 }
+
+      # An OpenRouter-LIKE OpenAI-compatible gateway. Needs OPENROUTER_API_KEY.
+      # The router reports it as unavailable when that env var is unset and never
+      # dispatches to it, so a profile without the key still boots and runs.
+      openrouter:
+        displayName: OpenRouter
+        apiKeyEnv: OPENROUTER_API_KEY
+        api: openai-completions
+        baseURL: https://openrouter.ai/api/v1
+        defaultContextWindow: 128000
+        defaultMaxTokens: 32000
+        models:
+          - { id: qwen/qwen3.8-27b,            name: Qwen3.8 27B (OpenRouter),  contextWindow: 262144, maxTokens: 32000 }
+          - { id: deepseek/deepseek-chat-v3.1, name: DeepSeek V3.1 (OpenRouter), contextWindow: 128000, maxTokens: 32000 }
+          - { id: z-ai/glm-4.6,                name: GLM-4.6 (OpenRouter),      contextWindow: 128000, maxTokens: 32000 }
+
+- insert:
+    - id: swarm-router
+      name: dsh-swarm-router
+      config:
+        subagentProvider: spawn
+        defaultChildMaxTokens: 1024

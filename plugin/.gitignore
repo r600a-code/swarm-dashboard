@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Build output
+lib/
+dist/
+
+# Local DSH_HOME used for sandboxed testing (contains credentials)
+.dsh-home/
+_dsh-home/
+
+# Probe artifacts (ad-hoc, not part of the bundle)
+_probe/
+
+# OS / editor
+.DS_Store
+*.log
+.env

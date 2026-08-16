@@ -1,0 +1,61 @@
+{
+  "name": "dsh-swarm-router",
+  "version": "0.2.0",
+  "description": "DSH plugin platform: sub-agent matrix swarm + model aggregation registry (PR flow) + plugin extension point (ctx.swarmRouter) + real-task feedback/ranking + token-consumption stats (cfgpu highlighted). Routes heterogeneous tasks to the most suitable model (OpenRouter-like + cfgpu.com/llm/square), dispatches via in-process subagents or direct ctx.llm calls.",
+  "type": "module",
+  "main": "index.js",
+  "license": "MIT",
+  "author": "AIAD",
+  "homepage": "https://github.com/r600a-code/dsh-swarm-router#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/r600a-code/dsh-swarm-router.git"
+  },
+  "keywords": [
+    "deepseek",
+    "harness",
+    "dsh",
+    "dsh-plugin",
+    "subagent",
+    "swarm",
+    "model-router",
+    "cfgpu",
+    "openrouter",
+    "llm-routing"
+  ],
+  "files": [
+    "index.js",
+    "catalog.js",
+    "router.js",
+    "ranking.js",
+    "store.js",
+    "models/registry.json",
+    "cordis.patch.yml",
+    "benchmark/benchmark.json",
+    "scripts/validate-registry.mjs",
+    "CONTRIBUTING.md",
+    "README.md",
+    "README.zh.md",
+    "docs/PAPER.md",
+    "docs/PAPER.zh.md"
+  ],
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "*",
+    "@deepseek-ai/dsh-tools": "*",
+    "@deepseek-ai/dsh-agent": "*",
+    "@deepseek-ai/dsh-llm": "*",
+    "@deepseek-ai/dsh-subagent": "*"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/cordis": { "optional": false },
+    "@deepseek-ai/dsh-tools": { "optional": false },
+    "@deepseek-ai/dsh-agent": { "optional": false },
+    "@deepseek-ai/dsh-llm": { "optional": false },
+    "@deepseek-ai/dsh-subagent": { "optional": false }
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
