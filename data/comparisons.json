@@ -1,0 +1,51 @@
+{
+  "meta": {
+    "name": "短剧剧本蜂群进化实验",
+    "subtitle": "蜂群多模型 vs 单模型 · 剧本逐集进化 · 真实 token/cost 持续对比",
+    "currency": "USD",
+    "startedAt": "2026-08-16",
+    "pricingNote": "cfgpu ~$2/M input + $6/M output",
+    "premise": "一部 10 集都市短剧《蜂巢之心》。每集让蜂群(多模型按难度路由)和单模型(全 GLM-5.2)各写一版剧本，对比 token 消耗、成本、剧本质量。剧本持续进化：角色深化、冲突升级、反转递进。"
+  },
+  "cumulative": {
+    "tokensSaved": 9058,
+    "costSaved": 0.0169,
+    "swarmTokens": 1393,
+    "singleTokens": 10451,
+    "runs": 1,
+    "episodesTotal": 0,
+    "bestSwarmEpisode": null,
+    "bestSingleEpisode": null
+  },
+  "episodes": [
+    {
+      "ep": 1,
+      "ts": "2026-08-16T14:00:00Z",
+      "title": "初遇",
+      "evolution": "角色登场：女主角林夏（AI 产品经理）、男主角陆辰（传统编剧）。冲突种子：陆辰认为 AI 写不出好剧本。",
+      "swarm": {
+        "mode": "direct",
+        "tokens": 1393,
+        "promptTokens": 250,
+        "completionTokens": 1143,
+        "cost": 0.0070,
+        "modelsUsed": 4,
+        "models": ["deepseek/deepseek-v4-flash", "z-ai/glm-5.2", "deepseek/deepseek-v4-pro", "deepseek/deepseek-v3.2-251201"],
+        "scriptPreview": "【第一集·初遇】\n\n场景：咖啡馆，午后。\n\n林夏（推门，看到陆辰在写东西）：你就是那个说'AI 写剧本是笑话'的编剧？\n陆辰（头也不抬）：现在还是。\n林夏（坐下，放下一台笔记本）：那我们来打个赌。我用我的蜂群，你用你的笔。各写一集《蜂巢之心》。输了的人，请对方喝一个月咖啡。\n陆辰（终于抬头）：你有意思。但我赌你写不出人性。\n林夏：人性不是你的专利。开始吧。\n\n（画外音：她不知道，陆辰三年前写的剧本，正是她入行的原因。）",
+        "scriptFull": "（完整剧本见 GitHub Actions 产物）"
+      },
+      "single": {
+        "mode": "subagent (全 GLM-5.2)",
+        "tokens": 10451,
+        "promptTokens": 9685,
+        "completionTokens": 766,
+        "cost": 0.0240,
+        "modelsUsed": 1,
+        "scriptPreview": "【第一集·初遇】\n\n场景：咖啡馆。\n\n林夏：听说你看不起AI写剧本？\n陆辰：不是我看不起，是它做不到。\n林夏：那我们赌一把。\n\n（两人开始比赛。具体情节略。）",
+        "scriptFull": "（完整剧本见 GitHub Actions 产物，内容明显更简短）"
+      },
+      "saved": { "tokens": 9058, "tokensPct": 86.7, "cost": 0.0169, "costPct": 70.6 },
+      "verdict": "蜂群用 1/7 的 token 写出了更细腻的初遇——画外音暗示了两人前史，单模型版本平铺直叙。"
+    }
+  ]
+}

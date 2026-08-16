@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>短剧剧本蜂群进化实验 — 蜂群 vs 单模型</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#12121a;--card:#1a1a2e;--card2:#22223a;--border:#2a2a3e;
+  --text:#e0e0e8;--dim:#8888a0;--accent:#00d4aa;--accent2:#ff6b6b;--gold:#ffd700;--blue:#4a9eff;--purple:#a855f7
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.7;min-height:100vh}
+.container{max-width:1080px;margin:0 auto;padding:20px 16px 60px}
+.hero{text-align:center;padding:30px 0 20px}
+.hero h1{font-size:2em;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.hero .sub{color:var(--dim);font-size:.95em}
+.badge{display:inline-block;background:var(--purple);color:#fff;font-weight:700;padding:2px 10px;border-radius:20px;font-size:.75em;margin-left:6px}
+.live-dot{display:inline-block;width:8px;height:8px;background:var(--accent);border-radius:50%;animation:pulse 1.5s infinite;margin-right:6px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:24px 0}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center}
+.stat-card::before{content:"";display:block;height:3px;border-radius:3px;margin:-20px -20px 14px}
+.stat-card.save::before{background:var(--accent)}.stat-card.cost::before{background:var(--gold)}
+.stat-card.eps::before{background:var(--purple)}.stat-card.correct::before{background:var(--blue)}
+.stat-value{font-size:2em;font-weight:800}
+.stat-card.save .stat-value{color:var(--accent)}.stat-card.cost .stat-value{color:var(--gold)}
+.stat-card.eps .stat-value{color:var(--purple)}.stat-card.correct .stat-value{color:var(--blue)}
+.stat-label{color:var(--dim);font-size:.8em;text-transform:uppercase;letter-spacing:.5px}
+.stat-sub{color:var(--dim);font-size:.8em;margin-top:3px}
+.section-title{font-size:1.2em;font-weight:700;margin:30px 0 14px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.ep-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:0;margin-bottom:20px;overflow:hidden}
+.ep-header{background:var(--card2);padding:14px 20px;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.ep-num{background:var(--purple);color:#fff;font-weight:800;padding:3px 10px;border-radius:8px;font-size:.85em}
+.ep-title{font-weight:700;font-size:1.1em}
+.ep-evolution{color:var(--dim);font-size:.85em;flex:1;min-width:200px}
+.ep-saved{background:var(--accent);color:#000;font-weight:700;padding:3px 10px;border-radius:8px;font-size:.8em;white-space:nowrap}
+.ep-body{display:grid;grid-template-columns:1fr 1fr;gap:0}
+@media(max-width:700px){.ep-body{grid-template-columns:1fr}}
+.script-col{padding:16px 20px;border-right:1px solid var(--border)}
+.script-col:last-child{border-right:none}
+.script-col.swarm{background:rgba(0,212,170,.03)}
+.script-col.single{background:rgba(255,107,107,.03)}
+.col-header{font-weight:700;font-size:.9em;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.col-header.swarm{color:var(--accent)}.col-header.single{color:var(--accent2)}
+.col-meta{color:var(--dim);font-size:.75em;margin-bottom:10px}
+.col-meta .chip{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;margin:0 2px}
+.script-preview{white-space:pre-wrap;font-size:.88em;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;line-height:1.8;max-height:380px;overflow-y:auto}
+.verdict{padding:12px 20px;border-top:1px solid var(--border);font-size:.88em;color:var(--dim);background:var(--bg2)}
+.verdict strong{color:var(--gold)}
+.footer{text-align:center;color:var(--dim);font-size:.82em;margin-top:30px;padding-top:16px;border-top:1px solid var(--border)}
+.footer a{color:var(--accent);text-decoration:none}
+.loading{text-align:center;padding:60px;color:var(--dim)}
+.ep-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.ep-nav a{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:4px 12px;font-size:.85em;color:var(--dim);text-decoration:none}
+.ep-nav a:hover{border-color:var(--accent);color:var(--accent)}
+.ep-nav a.current{background:var(--purple);color:#fff;border-color:var(--purple)}
+</style>
+</head>
+<body>
+<div class="container" id="app"><div class="loading">加载短剧实验数据中…</div></div>
+<script>
+async function load(){const r=await fetch('data/comparisons.json',{cache:'no-store'});return r.json()}
+function fmt(n,d=0){return Number(n).toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d})}
+function money(n){return '$'+fmt(n,4)}
+function pct(n){return fmt(n,1)+'%'}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function render(d){
+  const c=d.cumulative,eps=d.episodes||[]
+  const latest=eps[eps.length-1]
+  let html=`
+  <div class="hero">
+    <h1>短剧剧本蜂群进化 <span class="badge">持续更新</span></h1>
+    <p class="sub">${esc(d.meta?.subtitle||'')} · ${esc(d.meta?.pricingNote||'')} · <span class="live-dot"></span>${d.meta?.startedAt||''} 起</p>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card save"><div class="stat-label">累计省 Token</div><div class="stat-value">${fmt(c.tokensSaved)}</div><div class="stat-sub">蜂群 ${fmt(c.swarmTokens)} vs 单模型 ${fmt(c.singleTokens)}</div></div>
+    <div class="stat-card cost"><div class="stat-label">累计省成本</div><div class="stat-value">${money(c.costSaved)}</div><div class="stat-sub">${esc(d.meta?.pricingNote||'')}</div></div>
+    <div class="stat-card eps"><div class="stat-label">已完成集数</div><div class="stat-value">${eps.length}</div><div class="stat-sub">《${esc(d.meta?.premise?d.meta.premise.split('。')[0].replace('一部10集',''):d.meta?.name||'蜂巢之心')}》</div></div>
+    <div class="stat-card correct"><div class="stat-label">蜂群省 %</div><div class="stat-value">${c.swarmTokens>0?pct((1-c.swarmTokens/c.singleTokens)*100):'—'}</div><div class="stat-sub">vs 单模型</div></div>
+  </div>`
+  // ep nav
+  if(eps.length>0){
+    html+='<div class="section-title">剧集导航</div><div class="ep-nav">'
+    eps.forEach((e,i)=>{html+=`<a href="#ep${e.ep}" class="${e===latest?'current':''}">第${e.ep}集 ${esc(e.title)}</a>`})
+    html+='</div>'
+  }
+  // premise
+  if(d.meta?.premise){
+    html+=`<div class="section-title">故事设定</div><div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;font-size:.9em;color:var(--dim)">${esc(d.meta.premise)}</div>`
+  }
+  // episodes (latest first)
+  html+='<div class="section-title">剧本对比</div>'
+  eps.slice().reverse().forEach(e=>{
+    const maxT=Math.max(e.swarm.tokens,e.single.tokens)
+    html+=`
+    <div class="ep-card" id="ep${e.ep}">
+      <div class="ep-header">
+        <span class="ep-num">第${e.ep}集</span>
+        <span class="ep-title">${esc(e.title)}</span>
+        <span class="ep-evolution">${esc(e.evolution)}</span>
+        <span class="ep-saved">省 ${fmt(e.saved.tokens)} tokens (${pct(e.saved.tokensPct)})</span>
+      </div>
+      <div class="ep-body">
+        <div class="script-col swarm">
+          <div class="col-header swarm">🐝 蜂群 (多模型路由 · direct)</div>
+          <div class="col-meta">${fmt(e.swarm.tokens)} tokens · ${money(e.swarm.cost)} · ${e.swarm.modelsUsed} 模型:
+            ${(e.swarm.models||[]).map(m=>`<span class="chip">${esc(m)}</span>`).join('')}
+          </div>
+          <div class="script-preview">${esc(e.swarm.scriptPreview)}</div>
+        </div>
+        <div class="script-col single">
+          <div class="col-header single">🤖 单模型 (全 GLM-5.2 · subagent)</div>
+          <div class="col-meta">${fmt(e.single.tokens)} tokens · ${money(e.single.cost)} · ${e.single.modelsUsed} 模型</div>
+          <div class="script-preview">${esc(e.single.scriptPreview)}</div>
+        </div>
+      </div>
+      <div class="verdict"><strong>评判：</strong>${esc(e.verdict)}</div>
+    </div>`
+  })
+  html+=`
+  <div class="footer">
+    <p>真实 cfgpu <code>/chat/completions</code> 调用 · GitHub Actions 定时更新剧本 + 数据</p>
+    <p>插件 <a href="https://github.com/r600a-code/dsh-swarm-router" target="_blank">dsh-swarm-router</a> ·
+       论文 <a href="https://github.com/r600a-code/multi-expert-agent" target="_blank">多专家模式</a> ·
+       <a href="https://github.com/r600a-code/swarm-dashboard" target="_blank">本站源码</a></p>
+  </div>`
+  document.getElementById('app').innerHTML=html
+}
+load().then(render).catch(e=>{document.getElementById('app').innerHTML='<div class="loading">加载失败: '+esc(e.message)+'</div>'})
+setInterval(()=>load().then(render),60000)
+</script>
+</body>
+</html>

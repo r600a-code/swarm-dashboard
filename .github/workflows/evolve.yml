@@ -1,0 +1,86 @@
+name: evolve-script
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # 每 6 小时进化一集
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  evolve:
+    runs-on: ubuntu-latest
+    env:
+      DSH_HOME: /tmp/dsh-home
+      CFGPU_API_KEY: ${{ secrets.CFGPU_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dsh + swarm-router
+        run: |
+          mkdir -p $DSH_HOME
+          cat > $DSH_HOME/.credentials.yaml <<EOF
+          DEEPSEEK_API_KEY: https://www.cfgpu.com/userapi/v1/model/v1
+          CFGPU_API_KEY: $CFGPU_API_KEY
+          EOF
+          chmod 600 $DSH_HOME/.credentials.yaml
+          cat > $DSH_HOME/settings.yaml <<'EOF'
+          llm-pi-ai:
+            providers:
+              cfgpu:
+                displayName: cfgpu
+                apiKeyEnv: CFGPU_API_KEY
+                api: openai-completions
+                baseURL: https://www.cfgpu.com/userapi/v1/model/v1
+                models:
+                  - { id: z-ai/glm-5.2, name: GLM-5.2, contextWindow: 1000000, maxTokens: 32000 }
+          agent-default-model:
+            provider: cfgpu
+            model: z-ai/glm-5.2
+          EOF
+          npm install -g @deepseek-ai/dsh
+          dsh plugin --profile headless add github:r600a-code/dsh-swarm-router
+
+      - name: Read current episode number
+        id: ep
+        run: |
+          EP=$(node -e "const d=require('./data/comparisons.json'); console.log((d.episodes||[]).length+1)")
+          echo "num=$EP" >> $GITHUB_OUTPUT
+
+      - name: Generate next episode via swarm_dispatch (direct)
+        run: |
+          EP=${{ steps.ep.outputs.num }}
+          PROMPT="写一部都市短剧《蜂巢之心》第${EP}集的完整剧本。角色：林夏(AI产品经理)、陆辰(传统编剧)。要求：1)包含对话和场景描写 2)情节有冲突和转折 3)300-500字 4)结尾留悬念。只输出剧本，不要解释。"
+          dsh --profile headless "Call swarm_dispatch with mode direct and tasks [{\"id\":\"ep${EP}\",\"kind\":\"general\",\"maxTokens\":2000,\"prompt\":\"${PROMPT}\"}]. Output ONLY the results array JSON, then stop." > /tmp/swarm_out.json 2>/dev/null || true
+
+      - name: Update comparisons.json
+        run: |
+          node scripts/update-episode.mjs /tmp/swarm_out.json data/comparisons.json ${{ steps.ep.outputs.num }}
+
+      - name: Commit + push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/comparisons.json
+          git commit -m "ep${{ steps.ep.outputs.num }}: 蜂群进化短剧" || true
+          git push
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
+    needs: evolve
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/deploy-pages@v4
