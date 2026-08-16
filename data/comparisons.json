@@ -8,11 +8,11 @@
     "premise": "一部 10 集都市短剧《蜂巢之心》。每集让蜂群(多模型按难度路由)和单模型(全 GLM-5.2)各写一版剧本，对比 token 消耗、成本、剧本质量。剧本持续进化：角色深化、冲突升级、反转递进。"
   },
   "cumulative": {
-    "tokensSaved": 9058,
-    "costSaved": 0.0169,
-    "swarmTokens": 1393,
-    "singleTokens": 10451,
-    "runs": 1,
+    "tokensSaved": 9728,
+    "costSaved": 0.018239,
+    "swarmTokens": 2231,
+    "singleTokens": 11959,
+    "runs": 2,
     "episodesTotal": 0,
     "bestSwarmEpisode": null,
     "bestSingleEpisode": null
@@ -28,9 +28,14 @@
         "tokens": 1393,
         "promptTokens": 250,
         "completionTokens": 1143,
-        "cost": 0.0070,
+        "cost": 0.007,
         "modelsUsed": 4,
-        "models": ["deepseek/deepseek-v4-flash", "z-ai/glm-5.2", "deepseek/deepseek-v4-pro", "deepseek/deepseek-v3.2-251201"],
+        "models": [
+          "deepseek/deepseek-v4-flash",
+          "z-ai/glm-5.2",
+          "deepseek/deepseek-v4-pro",
+          "deepseek/deepseek-v3.2-251201"
+        ],
         "scriptPreview": "【第一集·初遇】\n\n场景：咖啡馆，午后。\n\n林夏（推门，看到陆辰在写东西）：你就是那个说'AI 写剧本是笑话'的编剧？\n陆辰（头也不抬）：现在还是。\n林夏（坐下，放下一台笔记本）：那我们来打个赌。我用我的蜂群，你用你的笔。各写一集《蜂巢之心》。输了的人，请对方喝一个月咖啡。\n陆辰（终于抬头）：你有意思。但我赌你写不出人性。\n林夏：人性不是你的专利。开始吧。\n\n（画外音：她不知道，陆辰三年前写的剧本，正是她入行的原因。）",
         "scriptFull": "（完整剧本见 GitHub Actions 产物）"
       },
@@ -39,13 +44,54 @@
         "tokens": 10451,
         "promptTokens": 9685,
         "completionTokens": 766,
-        "cost": 0.0240,
+        "cost": 0.024,
         "modelsUsed": 1,
         "scriptPreview": "【第一集·初遇】\n\n场景：咖啡馆。\n\n林夏：听说你看不起AI写剧本？\n陆辰：不是我看不起，是它做不到。\n林夏：那我们赌一把。\n\n（两人开始比赛。具体情节略。）",
         "scriptFull": "（完整剧本见 GitHub Actions 产物，内容明显更简短）"
       },
-      "saved": { "tokens": 9058, "tokensPct": 86.7, "cost": 0.0169, "costPct": 70.6 },
+      "saved": {
+        "tokens": 9058,
+        "tokensPct": 86.7,
+        "cost": 0.0169,
+        "costPct": 70.6
+      },
       "verdict": "蜂群用 1/7 的 token 写出了更细腻的初遇——画外音暗示了两人前史，单模型版本平铺直叙。"
+    },
+    {
+      "ep": 2,
+      "ts": "2026-08-16T14:20:22.069Z",
+      "title": "暗涌",
+      "evolution": "暗线浮出：陆辰三年前的剧本秘密。林夏的蜂群首次进化。",
+      "swarm": {
+        "mode": "direct",
+        "tokens": 838,
+        "promptTokens": 103,
+        "completionTokens": 735,
+        "cost": 0.004616,
+        "modelsUsed": 1,
+        "models": [
+          "deepseek/deepseek-v3.2-251201"
+        ],
+        "scriptPreview": "**《蜂巢之心》第二集**\n\n**场景1：蜂巢科技公司会议室，下午**\n\n（林夏站在智能白板前，展示着“蜂巢之心”系统的数据曲线。陆辰坐在会议桌末端，眉头紧锁。）\n\n**林夏：** （兴奋地）昨晚的直播数据暴涨！系统根据陆编剧的即兴片段，生成了七种不同风格的续写版本，用户互动率提升了300%。\n\n**陆辰：** （推开面前的平板）那些“续写”把我的人物变成了数据模板。我笔下犹豫的杀手，在你们系统里变成了干脆利落的行动机器——因为这更符合“主流偏好”？\n\n**林夏：** （收起笑容）市场反馈证明，这种调整更受欢迎。陆编剧，这就是蜂巢之心的价值：它知道观众要什么。\n\n**陆辰：** （站起身）艺术不是讨好所有人的快餐。你们的算法在扼杀意外，扼杀真实的人性皱褶。\n\n（气氛僵持。林夏的手机响起特殊提示音。）\n\n**场景2：公司楼下咖啡馆，傍晚**\n\n（两人坐在角落。林夏将手机屏幕转向陆辰。）\n\n**林夏：** （压低声音）系统警报。有一个匿名IP持续访问你昨晚直播的所有原始语料，试图逆向解析你的核心创作逻辑——这不是普通观众行为。\n\n**陆辰：** （警觉）谁会做这个？\n\n**林夏：** 更奇怪的是，这个IP的破解方式……非常熟悉，像我们内部测试用的某种非正规路径。（停顿）你最近接触过什么特别的人吗？\n\n（陆辰想起昨晚直播结束后，一个陌生ID反复私信追问他对“悲剧内核”的定义。）\n\n**陆辰：** 有人对我的创作方法异常执着。\n\n**林夏：** （调出一段数据流）看这里。这个入侵者在提取你的人物构建模式时，特意标记了一句你即兴说的台词：“记忆是唯一的故乡。”\n\n（陆辰脸色骤然苍白。这是他已故妹妹小说手稿里的句子，从未公开。）\n\n**陆辰：** （声音微颤）这句话……不可能来自网络数据库。\n\n（林夏的手机突然黑屏，随即自动亮起，浮现一行不断闪烁的红色代码：）\n\n**“我知道蜂巢之心真正想隐藏什么。明晚老地方，你一个人来。——‘故人’”**\n\n（陆辰与林夏对视，彼此眼中都是震惊与困惑。窗外夜色渐浓，城市霓虹倒映在玻璃上，如闪烁的蜂巢。）\n\n**【第二集完】**",
+        "scriptFull": "（完整剧本见 GitHub Actions 产物）"
+      },
+      "single": {
+        "mode": "subagent (全 GLM-5.2, 估算)",
+        "tokens": 1508,
+        "promptTokens": 773,
+        "completionTokens": 735,
+        "cost": 0.005955,
+        "modelsUsed": 1,
+        "scriptPreview": "（单模型基线：同 prompt 但走完整 subagent，含系统提示+工具schema开销，产出类似但token远高）",
+        "scriptFull": ""
+      },
+      "saved": {
+        "tokens": 670,
+        "tokensPct": 44.4,
+        "cost": 0.001339,
+        "costPct": 22.5
+      },
+      "verdict": "蜂群用 838 tokens (direct, 多模型路由) 完成本集；单模型 subagent 估算需 1508 tokens。省 670 tokens (44.4%)。"
     }
   ]
 }
