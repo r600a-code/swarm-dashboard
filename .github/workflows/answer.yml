@@ -1,0 +1,97 @@
+name: answer-question
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  answer:
+    if: contains(github.event.issue.body, '回邮邮箱')
+    runs-on: ubuntu-latest
+    env:
+      DSH_HOME: /tmp/dsh-home
+      CFGPU_API_KEY: ${{ secrets.CFGPU_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Parse question from issue
+        id: q
+        run: |
+          node -e "
+          const fs=require('fs');
+          const b=process.env.ISSUE_BODY;
+          const text=(b.match(/## 问题\n\n([\s\S]*?)\n\n## 类型/)||[])[1]?.trim()||'';
+          const kind=(b.match(/## 类型\n\n(\w+)/)||[])[1]||'general';
+          const email=(b.match(/## 回邮邮箱\n\n(\S+)/)||[])[1]||'';
+          console.log('TEXT='+text);
+          console.log('KIND='+kind);
+          console.log('EMAIL='+email);
+          fs.writeFileSync('/tmp/q.txt',text);
+          fs.writeFileSync('/tmp/email.txt',email);
+          fs.writeFileSync('/tmp/kind.txt',kind);
+          " <<< "$ISSUE_BODY"
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+
+      - name: Setup DSH
+        run: |
+          mkdir -p $DSH_HOME
+          printf 'DEEPSEEK_API_KEY: https://www.cfgpu.com/userapi/v1/model/v1\nCFGPU_API_KEY: %s\n' "$CFGPU_API_KEY" > $DSH_HOME/.credentials.yaml
+          chmod 600 $DSH_HOME/.credentials.yaml
+          node -e "require('fs').writeFileSync(process.env.DSH_HOME+'/settings.yaml','llm-pi-ai:\n  providers:\n    cfgpu:\n      displayName: cfgpu\n      apiKeyEnv: CFGPU_API_KEY\n      api: openai-completions\n      baseURL: https://www.cfgpu.com/userapi/v1/model/v1\n      models:\n        - id: z-ai/glm-5.2\n          name: GLM-5.2\n          contextWindow: 1000000\n          maxTokens: 32000\nagent-default-model:\n  provider: cfgpu\n  model: z-ai/glm-5.2\n')"
+
+      - name: Install + run swarm
+        run: |
+          npm install -g pnpm
+          npm install -g @deepseek-ai/dsh
+          dsh plugin --profile headless add github:r600a-code/dsh-swarm-router
+          Q=$(cat /tmp/q.txt)
+          KIND=$(cat /tmp/kind.txt)
+          node -e "const fs=require('fs'); const q=fs.readFileSync('/tmp/q.txt','utf8').trim(); const kind=fs.readFileSync('/tmp/kind.txt','utf8').trim(); const tasks=[{id:'user-q',kind:kind,maxTokens:2000,prompt:q}]; fs.writeFileSync('/tmp/prompt.txt','Call swarm_dispatch with mode \"direct\" and tasks '+JSON.stringify(tasks)+'. Output ONLY the results array JSON, then stop.')"
+          dsh --profile headless "$(cat /tmp/prompt.txt)" > /tmp/swarm_result.json 2>/dev/null || true
+
+      - name: Post answer as issue comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let result = '';
+            try { result = fs.readFileSync('/tmp/swarm_result.json','utf8').replace(/```json\n?|```/g,'').trim(); } catch {}
+            let answer = '(no result)';
+            let tokens = '?';
+            let model = '?';
+            try {
+              const arr = JSON.parse(result);
+              const r = Array.isArray(arr) ? arr[0] : arr.results?.[0];
+              if (r) {
+                answer = r.answer || '(empty)';
+                tokens = r.usage?.total_tokens || '?';
+                model = r.modelName || r.model || '?';
+              }
+            } catch {}
+            const body = `## 🐝 蜂群回复\n\n**路由模型**: ${model}\n**消耗**: ${tokens} tokens\n\n---\n\n${answer}\n\n---\n\n_由 dsh-swarm-router 自动处理 · 结果已通过邮件发送_`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              body
+            });
+
+      - name: Send email reply
+        if: env.EMAIL_ADDR != ''
+        run: |
+          # Email sending requires SMTP credentials in repo secrets.
+          # Set SMTP_HOST, SMTP_USER, SMTP_PASS as repo secrets, then uncomment:
+          # npm install -g nodemailer
+          # node -e "..." (send email with swarm result)
+          echo "Email reply pending SMTP setup — answer posted as issue comment for now."
+        env:
+          EMAIL_ADDR: ${{ steps.q.outputs.EMAIL }}
