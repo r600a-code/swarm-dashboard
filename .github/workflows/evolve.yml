@@ -23,29 +23,16 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install pnpm + dsh + swarm-router
+      - name: Setup DSH_HOME
         run: |
-          npm install -g pnpm
           mkdir -p $DSH_HOME
           printf 'DEEPSEEK_API_KEY: https://www.cfgpu.com/userapi/v1/model/v1\nCFGPU_API_KEY: %s\n' "$CFGPU_API_KEY" > $DSH_HOME/.credentials.yaml
           chmod 600 $DSH_HOME/.credentials.yaml
-          cat > $DSH_HOME/settings.yaml <<'EOF'
-llm-pi-ai:
-  providers:
-    cfgpu:
-      displayName: cfgpu
-      apiKeyEnv: CFGPU_API_KEY
-      api: openai-completions
-      baseURL: https://www.cfgpu.com/userapi/v1/model/v1
-      models:
-        - id: z-ai/glm-5.2
-          name: GLM-5.2
-          contextWindow: 1000000
-          maxTokens: 32000
-agent-default-model:
-  provider: cfgpu
-  model: z-ai/glm-5.2
-EOF
+          node -e "require('fs').writeFileSync(process.env.DSH_HOME+'/settings.yaml', 'llm-pi-ai:\n  providers:\n    cfgpu:\n      displayName: cfgpu\n      apiKeyEnv: CFGPU_API_KEY\n      api: openai-completions\n      baseURL: https://www.cfgpu.com/userapi/v1/model/v1\n      models:\n        - id: z-ai/glm-5.2\n          name: GLM-5.2\n          contextWindow: 1000000\n          maxTokens: 32000\nagent-default-model:\n  provider: cfgpu\n  model: z-ai/glm-5.2\n')"
+
+      - name: Install pnpm + dsh + swarm-router
+        run: |
+          npm install -g pnpm
           npm install -g @deepseek-ai/dsh
           dsh plugin --profile headless add github:r600a-code/dsh-swarm-router
 
@@ -53,24 +40,24 @@ EOF
         id: ep
         run: |
           EP=$(node -e "const d=require('./data/comparisons.json'); console.log((d.episodes||[]).length+1)")
-          echo "num=$EP" >> $GITHUB_OUTPUT
+          echo "num=$EP" >> "$GITHUB_OUTPUT"
 
-      - name: Generate next episode via swarm_dispatch (direct)
+      - name: Generate next episode
         run: |
-          EP=${{ steps.ep.outputs.num }}
-          PROMPT="写一部都市短剧《蜂巢之心》第${EP}集的完整剧本。角色：林夏(AI产品经理)、陆辰(传统编剧)。要求：1)包含对话和场景描写 2)情节有冲突和转折 3)300-500字 4)结尾留悬念。只输出剧本，不要解释。"
-          dsh --profile headless "Call swarm_dispatch with mode direct and tasks [{\"id\":\"ep${EP}\",\"kind\":\"general\",\"maxTokens\":2000,\"prompt\":\"${PROMPT}\"}]. Output ONLY the results array JSON, then stop." > /tmp/swarm_out.json 2>/dev/null || true
+          EP="${{ steps.ep.outputs.num }}"
+          node -e "const fs=require('fs'); const ep=process.argv[1]; const p='\u5199\u4e00\u90e8\u90fd\u5e02\u77ed\u5267\u300a\u8702\u5de2\u4e4b\u5fc3\u300b\u7b2c'+ep+'\u96c6\u7684\u5b8c\u6574\u5267\u672c\u3002\u89d2\u8272\uff1a\u6797\u590f(AI\u4ea7\u54c1\u7ecf\u7406)\u3001\u9646\u8fb0(\u4f20\u7edf\u7f16\u5267)\u3002\u8981\u6c42\uff1a1)\u5305\u542b\u5bf9\u8bdd\u548c\u573a\u666f\u63cf\u5199 2)\u60c5\u8282\u6709\u51b2\u7a81\u548c\u8f6c\u6298 3)300-500\u5b57 4)\u7ed3\u5c3e\u7559\u60ac\u5ff5\u3002\u53ea\u8f93\u51fa\u5267\u672c\uff0c\u4e0d\u8981\u89e3\u91ca\u3002'; const tasks=[{id:'ep'+ep,kind:'general',maxTokens:2000,prompt:p}]; fs.writeFileSync('/tmp/prompt.txt','Call swarm_dispatch with mode \"direct\" and tasks '+JSON.stringify(tasks)+'. Output ONLY the results array JSON, then stop.')" "$EP"
+          dsh --profile headless "$(cat /tmp/prompt.txt)" > /tmp/swarm_out.json 2>/dev/null || true
 
       - name: Update comparisons.json
         run: |
-          node scripts/update-episode.mjs /tmp/swarm_out.json data/comparisons.json ${{ steps.ep.outputs.num }}
+          node scripts/update-episode.mjs /tmp/swarm_out.json data/comparisons.json "${{ steps.ep.outputs.num }}"
 
-      - name: Commit + push
+      - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/comparisons.json
-          git commit -m "ep${{ steps.ep.outputs.num }}: 蜂群进化短剧" || true
+          git commit -m "episode ${{ steps.ep.outputs.num }}" || true
           git push
 
       - name: Upload Pages artifact
